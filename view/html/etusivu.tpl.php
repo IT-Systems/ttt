@@ -26,6 +26,7 @@ $(function() {
 </script>
 
 <div class="kp_div">
+    <div class="kp_wrap">
     <div class="<?php print $aMsg[1]; ?>">
         <span class="<?php print $aMsg[2]; ?>" style="float: left; margin-right: .3em;"></span>
         <?php print $aMsg[0]?>
@@ -388,6 +389,7 @@ if (sizeof($vahvistukset) > 0) { ?>
     <hr/>
 <?php
 } ?>
+</div>
 </div>
 <script type="text/javascript">
     function aloitaVuoro()

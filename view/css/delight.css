@@ -73,7 +73,10 @@ button.ui-od-button { width:auto; overflow:visible; } /* removes extra button wi
     border-color: #AAA;
     margin-bottom: 20px;
 }
-.kp_div .etusivu_osio, .kp_div .omattiedot_osio, .tiedot_osio {
+.kp_div .kp_wrap {
+    margin: 0 10px;
+}
+.kp_div .omattiedot_osio, .tiedot_osio {
     padding: 0 2em;
 }
 
@@ -89,6 +92,16 @@ button.ui-od-button { width:auto; overflow:visible; } /* removes extra button wi
     float:left;
     width:100%;
     padding-bottom: 10px;
+}
+.etusivu_osio h3.head {
+    width: 100%;
+    background: #384450;
+}
+.etusivu_osio h3.head a {
+    margin: 5px;
+    line-height: 24px;
+    font-size: 14px;
+    color: #FFF;
 }
 
 .etusivu_alaosio{
@@ -712,6 +725,5 @@ label.no_form {
 }
 #sivudata {
     float: right;
-    padding-right: 30px;
-    margin-top: -24px;
+    padding-right: 15px;
 }
