@@ -1,0 +1,17 @@
+This file stores the change log since Version 1.0
+
+Version 1.1:
+-------------
+1. Wrong object reference in install file fixed.
+2. Error throwing due to argument incompatibility at loader in certain PHP environments fixed.
+3. With the change of URL of the feed URL, the requisite modifications have also been done to feed URL fetch method on IDE.
+
+VERSION 1.1.2:
+---------------
+1. $dir reference in model file reference was NULL. Fixed.
+2. PHP magic quote issues have been fixed while writing code files.
+3. Empty file content reading exception issue has been fixed on code files.
+
+VERSION 1.1.4:
+---------------
+1. bug related to userstatus has been fixed. For the existing installations, "userstatus" must be set to '1' for all active users including "admin".

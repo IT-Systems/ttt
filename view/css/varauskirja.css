@@ -1,0 +1,207 @@
+.aika-error {
+    border: 1px solid #D42424;
+}
+#uusi-konevaraus {
+    width: 420px;
+}
+.ui-accordion-content {
+    padding: 0;
+}
+.varaus {
+    background-color: #999999;
+    margin: 0.2em;
+    padding: 0.5em;
+}
+caption {
+    background-color: #2B393C;
+    color: #fff;
+    font-size: 16px !important;
+    font-weight: bold;
+    padding: 0.5em 0;
+}
+#varaukset {
+    margin-top: 2em;
+}
+.konetyyppi, .tila, .maatyo {
+    background-color: #455C60;
+    border-color: #314244;
+    color: #fff;
+    font-weight: normal;
+}
+.paiva {
+    background-color: #455C60;
+    border-color: #314244;
+    color: #fff;
+    font-weight: normal;
+}
+.kone {
+    background-color: #688A91;
+    border-color: #546F75;
+    color: #fff;
+    font-weight: normal;
+}
+#varaukset th, #varaukset td {
+    font-size: 11px;
+}
+
+.viikkonuoli {
+    margin: 0 2em;
+}
+.viikkonuoli img {
+    vertical-align: text-bottom;
+}
+.viikkonuoli:hover {
+    text-decoration: none;
+}
+.lento-varaus {
+    background-color: #ABBAC6;
+}
+.huolto-varaus {
+    background-color: #ADC9C6;
+}
+.time-picker {
+    z-index: 1200 !important;
+}
+
+.paivavaraukset {
+    min-width: 3100px;
+}
+.paivavaraukset .paiva {
+    min-width: 105px;
+    width: 105px;
+}
+.paivavaraukset caption {
+    text-align: left;
+    padding-left: 200px;
+}
+.paivavaraukset td {
+    border: 1px solid #efefef;
+}
+#varaukset-container {
+    width: 1200px;
+    overflow-x: auto;
+}
+
+.viikkovaraukset {
+    min-width: 1200px;
+}
+.viikkovaraukset .paiva {
+    width: 150px;
+}
+
+.saatavuus_2 {
+    background-color: #ededed;
+}
+.saatavuus_1 {
+    background-color: #CEEDC2;
+}
+
+#kohde-sarake {
+    max-width: 45px;
+}
+#nimi-sarake {
+    max-width: 120px;
+}
+#tunnus-sarake {
+    max-width: 20px;
+}
+
+.pvm {
+    width: 70px;
+}
+.klo {
+    width: 35px;
+}
+tr td:first-child {
+    text-align: right;
+}
+.tr-end td {
+    padding-bottom: 1em;
+}
+.paikallaolo_osio {
+    padding: 1em 0;
+    display: block;
+    float: left;
+}
+.paikallaolo_osio:first-child {
+    padding: 1em 0.5em 1em 1em;
+}
+
+
+#paikallaoloilmoitus_form {
+    margin: 1em 0;
+    display: block;
+}
+.saatavuus_2 {
+    background-color: #ededed;
+}
+.saatavuus_1 {
+    background-color: #CEEDC2;
+}
+#toiminnot-sarake {
+    width: 70px;
+}
+caption {
+    background-color: #2B393C !important;
+    border: medium none !important;
+    color: #FFFFFF !important;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+#siirry-paivaan-container {
+    display: none;
+    float: left;
+    height: 32px;
+    margin-left: 326px;
+    margin-top: 5px;
+}
+#siirry-paivaan-container label {
+    line-height: 28px;
+    font-weight: normal;
+}
+#siirry_paivaan {
+    width: 68px;
+    border: 1px solid #2B393C;
+    padding: 2px;
+}
+#siirry-paivaan-btn {
+    cursor: pointer;
+}
+.nuoli {
+    background-color: #2B393C;
+    display: inline-block;
+    color: #D2E903;
+    font-weight: bold;
+    font-size: 14px;
+    border: 0;
+    margin: 2px 0 0 0.5em;
+    padding: 1px 0.5em;
+}
+form {
+    display: inline;
+}
+.vk_napit {
+    display: block;
+    float: none;
+    width: 100%;
+    padding: 1em 0 1em 0;
+}
+td.tablehover {
+    background-color: #ededed; 
+}
+td.tableclick {
+    background-color: #eaeaea;
+}
+td.cellhover {
+    background-color: #ccc;
+}
+.paikallaoloilmoitus_icon {
+    width: 24px;
+    height: 24px;
+}
+#varauksen_tiedot_container {
+    max-width: 840px;
+}

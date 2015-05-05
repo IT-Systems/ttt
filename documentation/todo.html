@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="../view/css/index.php" rel="stylesheet" type="text/css" />
+	<title>Juokseva tilannekatsaus</title>
+	<style type="text/css">
+
+	div > ul {
+		padding-bottom: 1.5em;
+	}
+	#done li del {
+		text-decoration: none;
+	}
+
+	</style>
+</head>
+<body style="margin:10px 10px;">
+
+<div style="background-color:#FFF;display: inline-block;padding:5px 5px;">
+
+<h3>Bugeja ja toiveita</h3>
+<ul>
+    <li>Lentokokemus-kohta järjestelmässä ei osaa poimia eri lentokonetyypeillä lennettyä aikaa eli lentäessäni cky c150 niin aikaa ei ole ilmestynyt tyyppikohtaiseen lentokokemukseen</li>
+
+    <li><del>Etusivulle alasvetovalikko jossa oppilaiden ja opettajien nimet jolloin voivat tuotakin kautta hakea esimerkiksi yhteystietoja</del></li>
+    <li><del>Hakuun myös päällikkö sekä perämies. Konetyypeissä pari outoo pois.</del></li>
+    - Laajennettuun hakuun lisätty päällikön ja perämiehen valintamahdollisuus. Konetyypit voi poistaa hallinnan puolelta. Poistatteko, vai otetaanko ne vain hausta piiloon.
+    <li><del>Oppilaan lentäessä yksinlentoa pitää pakosta syöttää perämies? Tämän kuuluisi olla niin että perämiestä ei tarvitaan vaan valvoja joka on lennonopettaja</del></li>
+    - Kun oppilas valitaan päälliköksi tällöin vain valvoja on pakollinen kenttä. Kun taas opettaja on valittuna päälliköksi, pakollinen kenttä on perämies, mikäli lennon tyyppi on koulutuslento.
+    <li><del>Syötettäessä uutta lentoa mikäli laittakaa rastin yölentoaikaa tai perusmittariaikaa niin ei osaa automaattisesti tuota eritellä tuohon sarakkeeseen</del></li>
+    <li><del>Jokaiseen syötettyyn lentoon pitää syöttää kommentti-kenttään jotain.. Tulisi olla niin että ei ole pakollista syöttää mutta mahdollista</del></li>
+    <li><del>Lentoaikoja pitäisi saada syötettyä tästä päivästä päivästä eteenpäin takautuvasti.. Eräs oppilaamme on lupautunut syöttämään kaikki firman lentämät lennot järjestelmään</del></li>
+    <li><del>Kelpuutuksien vanhenemisen lähetessä voisi laittaa sekä koulutuspäällikön, päälennonopettajalle tiedon henkilöstä ja siitä kelpuutuksesta esim. Etusivulle mikä on vanhemmassa ja samoin tietysti Kelpuutuksen haltijalle. Hyvä aika olisi 3kk ennen Kelpuutuksen vanhenemista.</del></li>
+    - Mainitsemasi henkilöiden sivulle tulee lista taulukkomuodossa vanhentuvista/vanhentuneista kelpuutuksista, ja asianomaiselle vain omat kelpuutukset.
+</ul>
+
+<h3>Vanhoja - tehty varmaan kaikki</h3>
+<ul>
+<li> Omien kelpuutusten syöttäminen toimii epäluotettavasti; joskus ohjelma tallentaa lisätyn kelpuutuksen ja joskus ei</li>
+<li> Adminien pitää näkyä ohjelmassa samalla tavoin kuin opettajien - nyt ovat jossain "jemmassa" eikä heitä voi valita esim. varauskirjassa.</li>
+    <ul>
+        <li>&check; Lentoihin ja hallinnan kursseihin lisätty myös administrator -käyttäjät.</li>
+		<li>&check; Lento-, huolto- ja tilavarauksiin lisätty adminit</li>
+		<li>&check; Adminin paikallaoloilmoituksen henkilövalintaan lisätty adminit</li>
+    </ul>
+</ul>
+<ul>
+<li><del>Varauskirjan paikallaoloilmoitus ei kuulemma toimi. Ja paikallaoloilmoitus pitää olla sellainen, että käyttäjä voi ilmoittaa vain itsensä, ei muita.</del></li>
+<li> <del>Varauskirjassa pitäisi vasemman reunan lentokoneiden ym. lepakkoluolien pysyä koko ajan näkyvissä kun varauslistaa skrollaa, nyt ne häviävät.</del></li>
+<li> <del>Varauskirjan päivänäkymä pitäisi oletusarvoisesti olla näkyvissä klo 8 - 16 välillä, muut kellonajat esiin skrollaamalla.</del></li>
+<li> <del>Maatyövaraukset kokonaan pois varauskirjasta, meillä ei ole käyttöä niille.</del></li>
+</ul>
+<ul>
+<li> <strong>Lennot</strong> Staff-käyttäjäprofiililla ja Student-profiililla pitää olla samat toiminnot: nyt Staffilla ei pysty lisäämään lentoja</li>
+<ul>
+    <li>Johtuisiko palvelimen kellonajasta (vuoro ei alkanut ennen kuin lento)? Onnistui kyllä tallennus...</li>
+</ul>
+<li><del><strong>Lennot</strong> Uusi harjoitus-kohta pitää poistaa: meillä on vain lentoja, jotka ovat samalla harjoituksia, eli tässä tehdään samaa asiaa kahteen kertaan ja sekaannuksia tulee takuuvarmasti. Eli LENTO = HARJOITUS</del></li>
+<li><del><strong>Lennot</strong> Ja myös "Harjoitukset"-kohta kuuseen. Tällä ei ole mitään käyttöä. "Omat tiedot"-sivulla oleva "Lentojen seuranta" antaa riittävästi infoa (ja on itse asiassa tosi hyvän näköinen</del></li>
+</ul>
+<ul>
+<li><del>Kohdassa uusi lento: matkustajien lkm-kohtaan oletusarvoksi nolla, samoin lentoonlähtöihin ja laskeutumisiin sekä toiminnallisen ajan IFR- ja yökohtiin.</del> Lisäksi ohjelman pitää osata laskea ilma-aika ja lentoaika syötetyistä arvoista</li>
+<li><del>Valvoja-kohta pitää voida olla tyhjä: valvoja vaaditaan ainoastaan oppilaiden yksinlennoilla.</del></li>
+</ul>
+<ul>
+<li> Työaikojen syöttö ei toimi</li>
+<li> Staff-profiililla ei pysty nyt seuraamaan omaa työaikakertymää. Tämä ominaisuus pitää korjata ehdottomasti. Sen sijaan jo syötettyjä työaikoja ei saa pystyä muuttamaan Staff-profiililla. </li>
+</ul>
+<hr>
+    <h3>Seuraavat muutokset/lisäykset/korjaukset</h3>
+<ul>
+	<li>&check; Ulkoasu. Joka sivu. </li>
+	<li><strong>Etusivu</strong>
+		<ul>
+			<li>&check; Varaukset: listaa käyttäjän omat huolto- maatyö- ja tilavaraukset, jotka ajoittuvat kuluvaan päivään tai tulevaisuuteen. <br><em>Jos varaus on huomenna, näytetään päivämäärän paikalla teksti "huomenna"</em></li>
+			
+		</ul>
+	</li>
+	<li><strong>Varauskirja</strong>
+		<ul>
+			<li>Yksittäisen varauksen katselu perustilassa.</li>
+			<li>&check; Uusi varaus -lomakkeiden tyylittely </li>
+			<li>UUSI VARAUS -lomakkeet
+			<ul>
+				<li>LENTOVARAUS: "Arvioitu ilma-aika"-kenttään pudotusvalikko (tunnit ja minuutit)</li>
+				<li>LENTOVARAUS: "Arvioitu lentojen määrä" -kentän lisäys ja siihen pudotusvalikko</li>
+				<li><em>LENTOVARAUS: "Miehistö", "Valvoja" -kenttiin autocomplete-hakukentät</em></li>
+				<li><em>HUOLTOVARAUS: "Huollon nimike" -kenttään autocomplete-hakukentät</em></li>
+				<li>HUOLTOVARAUS: huoltovarauksen poista-painike</li>
+				<li><em>TILAVARAUS: "Vastuuhenkilöt" -kenttään autocomplete-hakukenttä</em></li>
+				<li><em>MAATYÖVARAUS: "Osallistujat" -kenttiin autocomplete-hakukentät</em></li>
+			</ul>
+			</li>
+			<li>Paikallaoloilmoitus
+				<ul>
+					<li>&check;Paikallaoloilmoituslomake </li>
+		</ul>
+	</li>
+</ul>
+<p><em>low priority</em></p>
+		
+    <h3>Tehdyt</h3>
+	<ul id="done">
+	<li><del>Kalenterissa näytetään vain käyttäjän omat kalenterimerkinnät; sekä käyttäjän vahvistamat merkinnät (jotka ovat tulleet viestien kautta)</del> &check;</li>
+        <li><del>Varausten muokkaus &amp; tallennus</del> &check;<ul><li><del>Päällekäisen varauksen tarkistus</del> &check;</li></ul></li>
+        <li><del>Kalenterin kalenterimerkintöihin sama väri kuin viesteissä on valittu</del> &check;</li>
+        <li><del>Lentoja voi syöttää vain niille ajoille, jotka on kirjattu työajaksi (työvuoro on aloitettu eikä sitä ole lopetettu <em>tai</em> työvuoro on jo kirjattu; esim. eilen)</del> &check;</li>
+        <ul>
+            <li>Toiminto vain opettajille tällä hetkellä. Oppilaille piilotettuna koko lentojen syöttö toistaiseksi.</li>
+        </ul>
+        <li><del>Peruutetut lennot ovat itsenäisiä tapahtumia -> tallennus, poisto, muokkaus</del> &check;</li>
+        <li><del>Syllabusten hallinta (Nimi, koodi)</del> - jätetään toistaiseksi staattiseksi.</li>
+        <li><del>Harjoitusten tekeminen (ainakin: nimi, koodi, syllabus, järjestysnumero?)</del> &check;</li>
+        <li><del>Opettajien ja oppilaiden kohdalla uutta lentoa lisättäessä: tarkista, että lennon syöttäjä kuuluu miehistöön (adminille ei rajoitusta)</del> &check;</li>
+        <li><del>Työajoista poistettava ulkoiset vuorot.</del></li>
+        <li><del>Lentojen ja työaikayhteenvetojen tulostus</del> &check; - tulostusviewi</li>
+        <li><del>Harjoitusten listaus, muokkaus ja poisto</del></li>
+        <li>Kurssien hallinta (Nimi, koodi, oletussyllabus)</li>
+        <li>Lentojen seuranta ts Oppilaiden syöttämien toteutuneiden lentojen tilastointi suhteessa syllabukseen</li>
+        <ul>
+            <li>Sijoitetaan omien tietojen alle, vaikka dokumentaation perusteella varauskirjassa... </li>
+            <li>Opettajilla ja oppilailla erilaiset näkymät</li>
+        </ul>
+        <li>Käyttäjienhallintaan Kurssi-kenttä</li>
+        <li>Peruutettujen lentojen tilastointi</li>
+
+        </ul>
+
+   <h3>Selvitykset</h3>
+
+    <ul>
+        <li>Seuraamasi lentosyllabus --> käytännön toiminta?</li>
+        <li>Paikallaoloilmoitus --> käytännön toiminta?</li>
+        <li>Harjoitus / lento <-> örgh, molemmista suoritus syllabusaamukampaan? Tällä hetkellä vain lennosta.</li>
+        <li>Harjoituksessa syötettävä tunnus, mitä ne ovat?</li>
+        <li>Aamukampaan haetaan suoritteet -> pitääkö lennon olla käyttäjän tallentama vai haetaanko kaikkien tallenteista?</li>
+        <li>Lennot osiossa voiko oppilas tehdä kaikki samat toimet kuin opettaja/admin? Tällä hetkellä ei voi tehdä peruutettuja lentoja.</li>
+    </ul>
+
+        <h3>Myöhemmin / nice-to-have</h3>
+        <ul>
+            <li>Työaikaan liittyvät, säännösten mukaiset (muokattavat?) varoitukset</li>
+        </ul>
+		
+<!--
+	<h3>Tehdyt muutokset kehitysympäristöön, <em><strong>ei vielä</strong> siirretty</em></h3>
+	<ul>
+		
+	</ul>
+-->
+
+	
+	<!--
+    <h3 class="siirretyt"></h3>
+	-->
+
+</div>
+
+</body>
+</html>

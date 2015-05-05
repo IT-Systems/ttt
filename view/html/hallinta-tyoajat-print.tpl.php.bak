@@ -1,0 +1,131 @@
+<?php
+$ak = new aikakalu();
+$len = new lennot();
+$user = $len->haeHenkilot($_POST["intUser"]);
+$name = $user["firstname"] . " " . $user["lastname"];
+
+$i = ($_POST["strSize"] == "-1") ? sizeof($vuorot) : $_POST["strSize"];
+$f = $_POST["strFilter"];
+$j = 0;
+$tulostettavat = array();
+
+foreach ($vuorot as $vuoro) {
+    list($alkupvm, $alkuaika) = explode(" ", $vuoro["aloitus"]);
+    list($loppupvm, $loppuaika) = explode(" ", $vuoro["lopetus"]);
+    $aprint = $ak->dbDateToFiDate($alkupvm) . ' klo ' . substr($alkuaika, 0, -3);
+    $lprint = $ak->dbDateToFiDate($loppupvm) . ' klo ' . substr($loppuaika, 0, -3);
+
+    if (strpos($aprint, $f) || strpos($lprint, $f) || strpos($vuoro["kommentti"], $f) || strpos($vuoro["kesto"], $f) || strpos($vuoro["lentotunnut"], $f) || empty($f)) {
+        $tulostettavat[$j] = $vuoro;
+        $tulostettavat[$j]["alkuprint"] = $aprint;
+        $tulostettavat[$j]["loppuprint"] = $lprint;
+        $j++;
+    }
+    if ($j == $i) break;
+}
+
+if (sizeof($tulostettavat) > 0) { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css">
+        @media print {
+            thead {
+                display: table-header-group;
+            }
+            .noPrint {
+                display:none;
+            }
+        }
+        body {
+            color: #000;
+            background-color: #FFF;
+            text-align: left;
+            font-family: Georgia, "Times New Roman", Times, serif;
+            font-size: 14px;
+        }
+        h3 {
+            font-size: 18px;
+        }
+        table th, table td {
+            text-align: left;
+            padding-left: 7px;
+            height: 26px;
+        }
+        table th {
+            font-size: 16px;
+        }
+        .c1, .c2 {
+            width: 125px;
+        }
+        .c3, .c4 {
+            width: 50px;
+        }
+        .c5 {
+            width: 200px;
+        }
+        </style>
+    </head>
+
+    <body>
+        <h3>Työaikayhteenveto</h3>
+        Käyttäjä: <?php print $name; ?><br/>
+        <?php if ($f) print "Suodatin: $f<br/>"; ?>
+        <br/>
+
+        <table cellspacing="0">
+            <thead>
+                <tr>
+                    <th class="c1">Vuoro alkoi</th>
+                    <th class="c2">Vuoro päättyi</th>
+                    <th class="c3">Kesto</th>
+                    <th class="c4">Lentoa</th>
+                    <th class="c5">Huomautukset</th>
+                </tr>
+            </thead>
+
+            <tbody>
+<?php
+    $aika48max = 20*60*60;
+    $aika24max = 10*60*60;
+    $lento48max = 14*60*60;
+    $lento24max = 8*60*60;
+    $aika24 = 24*60*60;
+    $aika48 = 48*60*60;
+
+    foreach ($tulostettavat as $rivi) {
+        // Huomautuksien laskenta
+        $msg = "";
+
+        if ($rivi["kestoint"] > $aika24max) {
+            $msg.= "Työaikaylitys. ";
+        }
+        if ($rivi["lentoint"] > $lento24max) {
+            $msg.= "Lentoaikaylitys.";
+        }
+        ?>
+                <tr>
+                    <td class="c1"><?php print $rivi["alkuprint"]; ?></td>
+                    <td class="c2"><?php print $rivi["loppuprint"]; ?></td>
+                    <td class="c3"><?php print $rivi["kesto"]; ?></td>
+                    <td class="c4"><?php print ($rivi["lentotunnit"] != "0:00") ? $rivi["lentotunnit"] : ""; ?></td>
+                    <td class="c5"><?php print $msg; ?></td>
+                </tr>
+<?php
+    } ?>
+            </tbody>
+        </table>
+    </body>
+
+    <div style="width:300px;height:20px;border-top:1px dotted #000;padding-top:5px;margin-top:35px;text-align:right;font-style:italic;"><?php print $name; ?></div>
+
+
+    <div class="noPrint">
+        <br/>
+        <a href="JavaScript:window.print();">Tulosta</a>
+    </div>
+</html>
+
+<?php
+} ?>

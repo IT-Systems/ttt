@@ -1,0 +1,9 @@
+<?php
+
+phpinfo();
+/* 
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+print htmlentities("Ääöååë", ENT_QUOTES, "UTF-8");
+?>

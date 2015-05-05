@@ -1,0 +1,635 @@
+<?php
+class aikakalu {
+    /* CONSTRUCTOR */
+    function __construct()
+    {
+        global $DB,$APP,$USER;
+        $this->DB   = $DB;
+        $this->APP  = $APP;
+        $this->USER = $USER;
+        return true;
+    }
+
+    public function getTimeZones()
+    {
+        $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}timezones";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->execute();
+        $timezones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $timezones;
+    }
+
+    public function tallennaUlkTyovuoro()
+    {
+        $start = $this->fiDateToDbDate($_POST["txtStartDate"]) . " " . $_POST["txtStartTime"] . ":00";
+        $end = $this->fiDateToDbDate($_POST["txtEndDate"]) . " " . $_POST["txtEndTime"] . ":00";
+        $_2ohj = (isset($_POST["chkTwoPilots"])) ? 1 : 0;
+        // $jatko = (isset($_POST["chkContinue"])) ? 1 : 0; // Tarvitaanko tätä?
+
+        // Tarkistetaan, että vuoro sijoitetaan menneeseen aikaan.
+        if ($end > date("Y-m-d H:i:s")) {
+            $aMsg[0] = "Vuoro syötetään vasta kun se on päättynyt!";
+            $aMsg[1] = "ui-state-error ui-corner-all ui-message-box";
+            $aMsg[2] = "ui-icon ui-icon-info";
+            return $aMsg;
+        }
+
+        // Tarkistetaan onko aloitusaika pienempi kuin lopetusaika
+        if ($start >= $end) {
+            $aMsg[0] = "Lopetusajan tulee olla suurempi kuin aloitusajan!";
+            $aMsg[1] = "ui-state-error ui-corner-all ui-message-box";
+            $aMsg[2] = "ui-icon ui-icon-info";
+            return $aMsg;
+        }
+
+        // Tarkistetaan ensiksi onko valitulle ajalle muita vuoroja tallennettuna.
+        if (!$this->onkoVapaaAikavali($start, $end)) {
+            $aMsg[0] = "Valittu aikaväli ei ole vapaa! Sinulla on jo tallennettu työvuoro kyseiselle ajalle.";
+            $aMsg[1] = "ui-state-error ui-corner-all ui-message-box";
+            $aMsg[2] = "ui-icon ui-icon-info";
+            return $aMsg;
+        }
+
+        $sql = "INSERT INTO {$this->APP->TABLEPREFIX}tyovuoro_ulk SET ";
+        $sql.= "user_id = :uid, aloitus = :start, lopetus = :end, ";
+        $sql.= "timezone_id = :tzid, kommentti = :comment, kaksi_ohjaajaa = :tpil";
+
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":uid", $this->USER->ID);
+        $stmt->bindParam(":start", $start);
+        $stmt->bindParam(":end", $end);
+        $stmt->bindParam(":tzid", $_POST["txtTimezone"]);
+        $stmt->bindParam(":comment", $_POST["txtComment"]);
+        $stmt->bindParam(":tpil", $_2ohj);
+
+        $stmt->execute();
+
+        $sPath = $_SERVER['PHP_SELF'] . '?ID=43&PF=1';
+	header("Location: $sPath");
+    }
+
+    public function fiDateToDbDate($str)
+    {
+        $dbTime = "0000-00-00";
+        list($day, $month, $year) = explode(".", $str);
+        if (strlen($day) == 1) $day = (string)"0".$day;
+        if (strlen($month) == 1) $month = (string)"0".$month;
+        $dbTime = $year."-".$month."-".$day;
+        return $dbTime;
+    }
+
+    public function dbDateToFiDate($str)
+    {
+        $fiDate = "00.00.0000";
+        list($year, $month, $day) = explode("-", $str);
+        if (strlen($day) == 1) $day = (string)"0".$day;
+        if (strlen($month) == 1) $month = (string)"0".$month;
+        $fiDate = $day.".".$month.".".$year;
+        return $fiDate;
+    }
+
+    public function haeKuukaudetSelect()
+    {
+        $mnow = date("n");
+        $ynow = date("Y");
+        $dArray[0]["value"] = $ynow."-".$mnow;
+        $dArray[0]["view"] = $this->haeKkFiNimi($mnow) . " " . $ynow;
+
+        for ($i = 1; $i <= 11; $i++) {
+            $mnow = $mnow - 1;
+            if ($mnow == 0) {
+                $mnow = 12;
+                $ynow = $ynow - 1;
+            }
+            $dArray[$i]["value"] = $ynow."-".$mnow;
+            $dArray[$i]["view"] = $this->haeKkFiNimi($mnow) . " " . $ynow;
+        }
+
+        return $dArray;
+    }
+
+    public function haeKkFiNimi($mo)
+    {
+        $finimi = "";
+        if ($mo == 1) $finimi = "Tammikuu";
+        if ($mo == 2) $finimi = "Helmikuu";
+        if ($mo == 3) $finimi = "Maaliskuu";
+        if ($mo == 4) $finimi = "Huhtikuu";
+        if ($mo == 5) $finimi = "Toukokuu";
+        if ($mo == 6) $finimi = "Kesäkuu";
+        if ($mo == 7) $finimi = "Heinäkuu";
+        if ($mo == 8) $finimi = "Elokuu";
+        if ($mo == 9) $finimi = "Syyskuu";
+        if ($mo == 10) $finimi = "Lokakuu";
+        if ($mo == 11) $finimi = "Marraskuu";
+        if ($mo == 12) $finimi = "Joulukuu";
+
+        return $finimi;
+    }
+
+    public function tarkistaSyotettyAika($aika)
+    {
+        list($tunti, $minuutti) = explode(":", $aika);
+        if ($tunti >= 24 || $tunti < 0 || $minuutti >= 60 || $minuutti < 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public function tarkistaSyotettyAikaMaare($aika)
+    {
+        list($tunti, $minuutti) = explode(":", $aika);
+        if ($tunti < 0 || $minuutti >= 60 || $minuutti < 0 || !is_numeric($tunti) || !is_numeric($minuutti)) {
+            return false;
+        }
+        return true;
+    }
+    /*
+     * Kuten alla mutta haetaan kaikki vuorot ... .
+     */
+    public function haeKaikkiVuorot($user_id='', $start='', $end='') {
+        if ($user_id == '') $user_id = $this->USER->ID;
+
+        $sql = "SELECT id, aloitus, lopetus, kommentti FROM {$this->APP->TABLEPREFIX}tyovuoro ";
+        $sql.= "WHERE user_id = :uid AND lopetus != :tyhja ";
+        if ($start!='') $sql.= "AND aloitus >= :alku ";
+        if ($end!='') $sql.= "AND lopetus <= :loppu ";
+        $sql.= "ORDER BY aloitus DESC";
+
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":uid", $user_id);
+        $stmt->bindValue(":tyhja", "0000-00-00 00:00:00");
+        if ($start!='') $stmt->bindParam(":alku", $this->fiDateToDbDate($start));
+        if ($end!='') $stmt->bindParam(":loppu", $this->fiDateToDbDate($end));
+        $stmt->execute();
+
+        $sVuorot = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $vuorot = array();
+
+        if (!$sVuorot) return FALSE;
+        else {
+            $i = 0;
+            foreach ($sVuorot as $vuoro) {
+                list($vDate, $vTime) = explode(" ", $vuoro["aloitus"]);
+                list($vy, $vm, $vd) = explode("-", $vDate);
+                list($vh, $vi, $vs) = explode(":", $vTime);
+                list($gDate, $gTime) = explode(" ", $vuoro["lopetus"]);
+                list($gy, $gm, $gd) = explode("-", $gDate);
+                list($gh, $gi, $gs) = explode(":", $gTime);
+
+                $vuorolista[$i]["id"] = $vuoro["id"];
+                $vuorolista[$i]["aloitus"] = $vuoro["aloitus"];
+                $vuorolista[$i]["lopetus"] = $vuoro["lopetus"];
+                $vuorolista[$i]["kommentti"] = $vuoro["kommentti"];
+                $vuorolista[$i]["kesto"] = $this->laskeAikaVali($vuoro["aloitus"], $vuoro["lopetus"]);
+                $vuorolista[$i]["alkuint"] = mktime($vh, $vi, $vs, $vm, $vd, $vy);
+                $vuorolista[$i]["loppuint"] = mktime($gh, $gi, $gs, $gm, $gd, $gy);
+                $vuorolista[$i]["kestoint"] = $vuorolista[$i]["loppuint"] - $vuorolista[$i]["alkuint"];
+                $vuorolista[$i]["vuoro"] = 1; // Sisäinen vuoro
+                $vuorolista[$i]["lentotunnit"] = $this->haeKayttajanLentoajat($user_id, $vuoro["aloitus"], $vuoro["lopetus"]);
+                list($lh, $lm) = explode(":", $vuorolista[$i]["lentotunnit"]);
+                $vuorolista[$i]["lentoint"] = $lh * 60 * 60 + $lm * 60;
+                $i++;
+            }
+        }
+        return $vuorolista;
+    }
+    /*
+     * Funktio hakee kuukauden työvuorot, jotka haetaan kahdesta eri tietokantataulusta.
+     */
+
+    public function haeKuukaudenVuorot($user_id='')
+    {
+        if ($user_id == '') $user_id = $this->USER->ID;
+        if (empty($_POST["kk"])) {
+            $month = date("n");
+            $year = date("Y");
+        }
+        else {
+            list($year, $month) = explode("-", $_POST["kk"]);
+        }
+
+        $alku1 = $year . "-" . $month . "-01 00:00:00";
+        $alku2 = $year . "-" . $month . "-31 23:59:59";
+        $loppu = '0000-00-00 00:00:00';
+        $vuorot = array();
+
+        // "Sisäiset" vuorot, joita syötellään etusivulla.
+        $sql = "SELECT id, aloitus, lopetus, kommentti FROM {$this->APP->TABLEPREFIX}tyovuoro ";
+        $sql.= "WHERE user_id = :uid AND aloitus >= :alku1 AND aloitus <= :alku2 AND lopetus > :loppu";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":uid", $user_id);
+        $stmt->bindParam(":alku1", $alku1);
+        $stmt->bindParam(":alku2", $alku2);
+        $stmt->bindParam(":loppu", $loppu);
+        $stmt->execute();
+        $sVuorot = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // "Ulkoiset" vuorot, jotka syötetään työaika-välilehden kautta.
+        $sql = "SELECT t.id, t.aloitus, t.lopetus, a.name AS vyohyke, t.kommentti FROM {$this->APP->TABLEPREFIX}tyovuoro_ulk t ";
+        $sql.= "LEFT JOIN {$this->APP->TABLEPREFIX}timezones a ON a.id = t.timezone_id ";
+        $sql.= "WHERE t.user_id = :uid AND t.aloitus >= :alku1 AND t.aloitus <= :alku2 AND t.lopetus > :loppu";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":uid", $user_id);
+        $stmt->bindParam(":alku1", $alku1);
+        $stmt->bindParam(":alku2", $alku2);
+        $stmt->bindParam(":loppu", $loppu);
+        $stmt->execute();
+        $uVuorot = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $uVuorot = false;
+
+        // Järjestetään vuorot.
+        if (!$sVuorot && !$uVuorot) return FALSE;
+        else {
+            if (!$sVuorot) $vuorot = $this->jarjestaVuorot($user_id, $uVuorot, '', $month, $year);
+            elseif (!$uVuorot) $vuorot = $this->jarjestaVuorot($user_id, $sVuorot, '', $month, $year);
+            else $vuorot = $this->jarjestaVuorot($user_id, $sVuorot, $uVuorot, $month, $year);
+        }
+
+        return $vuorot;
+    }
+
+    /*
+     * Funktion avulla järjestetään kuukauden vuorot aikajärjestykseen
+     */
+
+    private function jarjestaVuorot($user_id, $vuoro1, $vuoro2="", $month, $year)
+    {
+        $vuorolista = array();
+        $lastday = $this->haeKuunViimeinenPaiva($month, $year);
+
+        // Muodostetaan vuoroista yhtenäinen taulukko kronologisesti.
+        // Käydään ensin jokainen kuun päivä läpi.
+        for ($i = 1; $i <= $lastday; $i++) {
+            $verrokki = date("Y-m-d", mktime(0, 0, 0, $month, $i, $year)); // Tähän arvoon verrataan vuoroja.
+            $dayshifts = array();
+            $j = 0;
+
+            foreach ($vuoro1 as $key => $val) {
+                list($vdate, $vtime) = explode(" ", $val["aloitus"]); // Vuoron aloitustiedot
+
+                if ($verrokki == $vdate) { // Onko tämä vuoro alkanut tällä päivämäärällä?
+                    list($vy, $vm, $vd) = explode("-", $vdate);
+                    list($vh, $vi, $vs) = explode(":", $vtime);
+
+                    // Laitetaan väliaikaiseen päivätaulukkoon vuoron tiedot.
+                    $dayshifts[$j]["id"] = $val["id"];
+                    $dayshifts[$j]["aloitus"] = $val["aloitus"];
+                    $dayshifts[$j]["lopetus"] = $val["lopetus"];
+                    $dayshifts[$j]["kommentti"] = $val["kommentti"];
+                    $dayshifts[$j]["kesto"] = $this->laskeAikaVali($val["aloitus"], $val["lopetus"]);
+                    $dayshifts[$j]["alkuint"] = mktime($vh, $vi, $vs, $vm, $vd, $vy);
+                    if (isset($val["vyohyke"])) {
+                        $dayshifts[$j]["vyohyke"] = $val["vyohyke"];
+                        $dayshifts[$j]["vuoro"] = 2; // Ulkoinen vuoro, syötetään siis työvuorot -alta, jolloin myös lentoaika = kesto.
+                        $dayshifts[$j]["lentotunnit"] = $dayshifts[$j]["kesto"];
+                    }
+                    else {
+                        $dayshifts[$j]["vuoro"] = 1; // Sisäinen vuoro
+                        $dayshifts[$j]["lentotunnit"] = $this->haeKayttajanLentoajat($user_id, $val["aloitus"], $val["lopetus"]);
+                    }
+
+                    unset($vuoro1[$key]);
+                    $j++;
+                }
+            }
+
+            // Katsotaan oliko toista vuoroa (sekä ulkoinen että sisäinen db-taulu) tälle päivälle, ja käydään se samaan malliin läpi kuin ensimmäinenkin.
+            if (is_array($vuoro2)) {
+                foreach ($vuoro2 as $key => $val) {
+                    list($vdate, $vtime) = explode(" ", $val["aloitus"]);
+
+                    if ($verrokki == $vdate) {
+                        list($vy, $vm, $vd) = explode("-", $vdate);
+                        list($vh, $vi, $vs) = explode(":", $vtime);
+
+                        $dayshifts[$j]["id"] = $val["id"];
+                        $dayshifts[$j]["aloitus"] = $val["aloitus"];
+                        $dayshifts[$j]["lopetus"] = $val["lopetus"];
+                        $dayshifts[$j]["kommentti"] = $val["kommentti"];
+                        $dayshifts[$j]["kesto"] = $this->laskeAikaVali($val["aloitus"], $val["lopetus"]);
+                        $dayshifts[$j]["alkuint"] = mktime($vh, $vi, $vs, $vm, $vd, $vy);
+                        if (isset($val["vyohyke"])) {
+                            $dayshifts[$j]["vyohyke"] = $val["vyohyke"];
+                            $dayshifts[$j]["lentotunnit"] = $dayshifts[$j]["kesto"];
+                            $dayshifts[$j]["vuoro"] = 2;
+                        }
+                        else {
+                            $dayshifts[$j]["vuoro"] = 1;
+                            $dayshifts[$j]["lentotunnit"] = $this->haeKayttajanLentoajat($user_id, $val["aloitus"], $val["lopetus"]);
+                        }
+
+                        unset($vuoro2[$key]);
+                        $j++;
+                    }
+                }
+            }
+
+            // Järjestetään päivän vuorot järjestykseen aloitusajan perusteella.
+            if (sizeof($dayshifts) > 0) {
+                if (sizeof($dayshifts) > 1) {
+                    $this->aasort($dayshifts, "alkuint");
+                }
+
+                // Ja laitetaan palautettavaan kronologisesti järjestettävään taulukkoon.
+                $vuorolista[$i] = $dayshifts;
+            }
+        }
+
+        return $vuorolista;
+    }
+
+    /*
+     * Taulukon järjestäminen tietyn kentän perusteella.
+     */
+    private function aasort (&$array, $key) {
+        $sorter=array();
+        $ret=array();
+        reset($array);
+        foreach ($array as $ii => $va) {
+            $sorter[$ii]=$va[$key];
+        }
+        asort($sorter);
+        foreach ($sorter as $ii => $va) {
+            $ret[$ii]=$array[$ii];
+        }
+        $array=$ret;
+    }
+
+    private function haeKuunViimeinenPaiva($month, $year)
+    {
+        $day = date("j", mktime(0, 0, -1, $month+1, 1, $year));
+        return $day;
+    }
+
+    /*
+     * Vuoron keston laskenta = (loppu - alku)aika. Palauttaa tulostettavan muodon esim. 4:30
+     */
+    public function laskeAikaVali($start, $end)
+    {
+        $hour = '0';
+        $minute = '0';
+        $timedifference = '0:00';
+
+        list($sdate, $stime) = explode(" ", $start);
+        list($edate, $etime) = explode(" ", $end);
+        list($syear, $smonth, $sday) = explode("-", $sdate);
+        list($shour, $sminute, $ssec) = explode(":", $stime);
+        list($eyear, $emonth, $eday) = explode("-", $edate);
+        list($ehour, $eminute, $esec) = explode(":", $etime);
+
+        $sstamp = mktime($shour, $sminute, $ssec, $smonth, $sday, $syear);
+        $estamp = mktime($ehour, $eminute, $esec, $emonth, $eday, $eyear);
+        $timediffmins = ($estamp - $sstamp) / 60;
+
+        $hour = floor($timediffmins / 60);
+        $minute = $timediffmins % 60;
+        if (strlen($minute) == 1) $minute = (string)'0' . $minute;
+        $timedifference = (string)$hour.":".$minute;
+
+        return $timedifference;
+    }
+
+    /*
+     * Muuttaa db-tyyppisen ajan esim 1:50(:00) minuuteiksi
+     */
+    public function muunnaAikaMinuuteiksi($aika)
+    {
+        $mins = 0;
+        list($h, $min, $sec) = explode(":", $aika);
+        $mins = $h * 60 + $min;
+        return $mins;
+    }
+
+
+    /*
+     * Muuttaa minuutit db-tyyppiseksi ajaksi (h*n)h:mm
+     */
+    public function muunnaMinuutitAjaksi($mins)
+    {
+        $aika = '';
+        $tunnit = floor($mins / 60);
+        $minuutit = $mins % 60;
+        if (strlen($minuutit) == 1) $minuutit = "0".$minuutit;
+        return $tunnit . ":" . $minuutit;
+    }
+
+    /*
+     * Tarkastaa onko alku ja loppu (DATETIME) aikojen välillä vuoroja voimassa.
+     * Palauttaa FALSE, jos on. TRUE jos ei ole.
+     */
+    private function onkoVapaaAikavali($alku, $loppu)
+    {
+        $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}tyovuoro_ulk ";
+        $sql.= "WHERE (:alku >= aloitus AND :alku < lopetus) ";
+        $sql.= "OR (:alku < aloitus AND :loppu > aloitus) AND user_id = :uid";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":alku", $alku);
+        $stmt->bindParam(":loppu", $loppu);
+        $stmt->bindParam(":uid", $this->USER->ID);
+        $stmt->execute();
+        $rivit = $stmt->fetchAll();
+
+        $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}tyovuoro ";
+        $sql.= "WHERE (:alku >= aloitus AND (:alku < lopetus OR lopetus = :dbnul)) ";
+        $sql.= "OR (:alku < aloitus AND :loppu > aloitus) AND user_id = :uid";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":alku", $alku);
+        $stmt->bindParam(":loppu", $loppu);
+        $stmt->bindValue(":dbnul", "0000-00-00 00:00:00");
+        $stmt->bindParam(":uid", $this->USER->ID);
+        $stmt->execute();
+        $rivit2 = $stmt->fetchAll();
+
+        if (!$rivit && !$rivit2) return TRUE;
+
+        return FALSE;
+    }
+
+    /*
+     * Funktion avulla haetaan vuoron aikaraameista lennon tunnit käyttäjälle
+     * (,ja ainakin yhteenvetoon)
+     */
+    public function haeKayttajanLentoajat($user_id, $alku, $loppu)
+    {
+        $lentoaika = "0:00";
+        list($vuoronAlkuPvm, $vuoronAlkuAika) = explode(" ",$alku);
+        list($vuoronLoppuPvm, $vuoronLoppuAika) = explode(" ", $loppu);
+
+        // Oletetaan että vuorot tehdään saman päivän aikana
+        $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}lennot ";
+        $sql.= "WHERE alkamispaiva = '{$vuoronAlkuPvm}' AND off_block_aika >= '{$vuoronAlkuAika}' AND on_block_aika <= '{$vuoronLoppuAika}'";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->execute();
+        $lennot = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (sizeof($lennot) > 0) {
+            $minuutit = 0;
+            foreach ($lennot as $lento) {
+                // Jos käyttäjä on lennon valvoja tai lennon miehistössä lisätään lentotunteihin.
+                if ($lento["paallikko_user_id"] == $user_id || $lento["peramies_user_id"] == $user_id || $lento["muu_jasen_user_id"] == $user_id) {
+                    $kesto = $lento["lentoaika"];
+                    list($vHours, $vMins) = explode(":", $kesto);
+                    $minuutit+= $vHours * 60;
+                    $minuutit+= $vMins;
+                }
+            }
+
+            $tunnit = floor($minuutit / 60);
+            $minuutit = $minuutit % 60;
+            if (strlen($minuutit) == 1) $minuutit = (string)"0".$minuutit;
+            $lentoaika = $tunnit . ":" . $minuutit;
+        }
+
+        return $lentoaika;
+    }
+
+    /*
+     * Tarkastaa onko käyttäjä lennon miehistössä
+     */
+    private function onkoLennonMiehistossa($lentoid)
+    {
+        $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}varaus_lento_miehisto ";
+        $sql.= "WHERE lentovaraus = :lid AND henkilo = :uid";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":lid", $lentoid);
+        $stmt->bindParam(":uid", $this->USER->ID);
+        $stmt->execute();
+        $rivi = $stmt->fetch();
+
+        if (!$rivi) return FALSE;
+        return TRUE;
+    }
+
+    /*
+     * Funktio hakee tietokannasta korvauslajit (esim. palkka).
+     * Niitä käytetään työajan alla uuden korvauksen luonnissa ja palkkaerittelylistauksessa.
+     */
+    public function haeKorvausLajit($id='')
+    {
+        $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}korvaus_lajit";
+        if (!empty($id)) $sql.= " WHERE id = :klid";
+        $stmt = $this->DB->prepare($sql);
+        if (!empty($id)) $stmt->bindParam(":klid", $id);
+        $stmt->execute();
+
+        if (!empty($id)) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        else {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+    public function tallennaKorvaus()
+    {
+        // Tarkistetaan syötteet
+        $pvm = $this->fiDateToDbDate($_POST["txtDate"]);
+        if ($pvm > date("Y-m-d")) {
+            $sPath = $_SERVER['PHP_SELF'] . '?ID=45&new&PF=2';
+            header("Location: $sPath");
+            exit();
+        }
+
+        $hpalkka = (float)str_replace(",", ".", $_POST["txtWage"]);
+        $tunnit = (float)str_replace(",", ".", $_POST["txtHours"]);
+
+        if ($hpalkka <= 0 || $tunnit <= 0) {
+            $aMsg[0] = "Syötteissä vikaa. Tarkista tunnit ja palkka!";
+            $aMsg[1] = "ui-state-error ui-corner-all ui-message-box";
+            $aMsg[2] = "ui-icon ui-icon-info";
+            return $aMsg;
+        }
+        
+        $selite = $_POST["txtDesc"];
+        $tyyppi = $_POST["intType"];
+
+        $sql = "INSERT INTO {$this->APP->TABLEPREFIX}korvaus SET ";
+        $sql.= "user_id = :uid, laji_id = :lid, paivamaara = :pvm, ";
+        $sql.= "selitys = :desc, tuntipalkka = :wage, tunnit = :hrs";
+
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":uid", $this->USER->ID);
+        $stmt->bindParam(":lid", $tyyppi);
+        $stmt->bindParam(":pvm", $pvm);
+        $stmt->bindParam(":desc", $selite);
+        $stmt->bindParam(":wage", $hpalkka);
+        $stmt->bindParam(":hrs", $tunnit);
+        $stmt->execute();
+
+        $sPath = $_SERVER['PHP_SELF'] . '?ID=45&new&PF=1';
+	header("Location: $sPath");
+    }
+
+    /*
+     * Haetaan käyttäjän korvaukset (valitulle) kuukaudelle.
+     */
+    public function haeHenkilonKorvaukset()
+    {
+        $mny = (empty($_POST["kk"])) ? date("Y-m") : $_POST["kk"];
+        list($year, $month) = explode("-", $mny);
+
+        $sql = "SELECT k.*, l.nimi FROM {$this->APP->TABLEPREFIX}korvaus k ";
+        $sql.= "LEFT JOIN {$this->APP->TABLEPREFIX}korvaus_lajit l ON k.laji_id = l.id ";
+        $sql.= "WHERE k.user_id = :uid AND YEAR(paivamaara) = :year AND MONTH(paivamaara) = :month";
+
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":uid", $this->USER->ID);
+        $stmt->bindParam(":year", $year);
+        $stmt->bindParam(":month", $month);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function poistaKorvaus()
+    {
+        $sql = "DELETE FROM {$this->APP->TABLEPREFIX}korvaus ";
+        $sql.= "WHERE id = :kid AND user_id = :uid";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":kid", $_GET["korvaus_id"]);
+        $stmt->bindParam(":uid", $this->USER->ID);
+        $stmt->execute();
+
+        $sPath = $this->APP->BASEURL . "/tyoaika.php?ID=45&PF=1";
+	header("Location: $sPath");
+    }
+
+    /*
+     * @param $userid
+     * @param $date
+     * return true V false
+     */
+    public function onkoVuoroa($userid, $date, $time1, $time2)
+    {
+        $startStamp = $date . ' ' . $time1;
+        $endStamp = $date . ' ' . $time2;
+
+        // Jos loppuaika < alkuaika, niin silloin on kyseessä yliyönlento, joten katsotaan seuraavalle
+        // päivälle jatkuvaa työvuoroa.
+        if ($endStamp < $startStamp) {
+            list($year, $month, $day) = explode("-", $date);
+            $newdate = date("Y-m-d", mktime(0,0,0,$month,$day+1,$year));
+            $endStamp = $newdate . ' ' . $time2;
+        }
+
+        $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}tyovuoro ";
+        $sql.= "WHERE user_id = :uid AND ";
+        $sql.= "((aloitus <= '".$startStamp."' AND lopetus >= '".$endStamp."' AND lopetus != '0000-00-00') ";
+        $sql.= "OR (aloitus <= '".$startStamp."' AND lopetus = '0000-00-00 00:00:00'))";
+        /*
+        $sql.= "((DATEDIFF(aloitus, '".$startStamp."') <= 0 AND DATEDIFF(lopetus, '".$endStamp."') >= 0) OR ";
+        $sql.= "(DATEDIFF(aloitus, '".$startStamp."') <= 0 AND lopetus = '0000-00-00 00:00:00'))";
+        */
+
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindParam(":uid", $userid);
+        $stmt->execute();
+        $vuoro = $stmt->fetch();
+
+        return (!$vuoro) ? false : true;
+    }
+}
+
+?>

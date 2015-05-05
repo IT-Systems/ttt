@@ -1,0 +1,444 @@
+@import "delight.css";
+@import "theme/jquery-ui-1.8.custom.css";
+@import "fg.menu.css";
+body
+{
+  font-size:12px;
+  font-family:Arial,Helvetica,sans-serif;
+  background-color:#F8F8F8;
+  margin:0;
+}
+
+#ui-od-header
+{
+  width:100%;
+  height:37px;
+  clear:both;
+  background-color:#3a8104;
+  border-bottom:2px solid #2EA62B;
+}
+
+#ui-menu
+{
+  background-color:#000000;
+  height:34px;
+  width:924px;
+  margin:10px auto auto 18px;
+}
+
+#ui-container
+{
+  width:960px;
+  background-color:#F8F8F8;
+  border:0;
+}
+
+.ui-widget-center
+{
+  margin:auto;
+}
+
+.ui-widget-left
+{
+  float:left;
+}
+
+.ui-bg-white
+{
+  background-color:#F8F8F8;
+}
+
+th
+{
+  text-align:left;
+  font-weight:bold;
+  padding:10px;
+  font-family:Arial, Helvetica, sans-serif;
+  font-size:11px;
+  margin-bottom:10px;
+  background-color:#E5F4D5;
+  border:1px solid #C2E2AC;
+}
+
+td
+{
+  font-family:Arial, Helvetica, sans-serif;
+  padding:10px;
+  margin:0!important;
+}
+
+.tableData
+{
+  clear:both;
+  margin-top:1px;
+  text-align:left;
+  border-collapse:collapse;
+  margin-bottom:5px;
+  color:#000000;
+  margin-right:0;
+  width:99.3%;
+}
+
+.ui-od-button-with-icon
+{
+  padding:.4em 1em .4em 20px;
+  text-decoration:none;
+  position:relative;
+}
+
+.ui-od-button-with-icon span.ui-icon
+{
+  margin:0 5px 0 0;
+  position:absolute;
+  left:.2em;
+  top:50%;
+  margin-top:-8px;
+  zoom:1;
+}
+
+label
+{
+  font-size:12px;
+  font-weight:bold;
+  margin-bottom:5px;
+  float:left;
+  clear:both;
+  height:12px;
+}
+
+label span
+{
+  font-weight:normal;
+  font-style:italic;
+  padding-bottom: 1em;
+  display: inline-block;
+}
+
+label.error
+{
+  font-size:11px;
+  display:block;
+  clear:both;
+  color:red;
+}
+
+.textboxNormal, .dropdown, .checkbox, input
+{
+  border:1px solid #384450;
+  padding: 0.2em;
+}
+
+#top-od-menu
+{
+  float:right;
+  color:#000000;
+  margin-right:0;
+  margin-top:14px;
+  font-weight:bold;
+}
+
+.textareaNormal
+{
+  float:left;
+  clear:both;
+  border:1px solid #384450;
+  font-size:12px;
+  padding:4px 2px 0;
+}
+
+tableData td
+{
+  background-color:#ffffff;
+}
+
+.makeBold
+{
+  font-weight:bold;
+  font-size:12px;
+  color:#000000;
+}
+
+.midBodyContent
+{
+  border:1px solid #aed0ea;
+  float:right;
+  margin-top:10px;
+  width:776px;
+  padding:5px 10px;
+  background-color:#ffffff;
+}
+
+.tableContent
+{
+  font-size:12px;
+  padding:10px;
+  font-family:Arial, Verdana;
+  vertical-align:top;
+  background-color:#ffffff;
+  border:1px solid #C2E2AC;
+}
+
+.formSpacing
+{
+  float:left;
+  margin-top:9px;
+  width:82%;
+  padding:5px 5px 8px 0;
+  margin-bottom:20px;
+}
+
+.ui-icon-back
+{
+  float:right;
+  margin-right:3px;
+  margin-top:1px;
+}
+
+#markerdiv
+{
+  background:url(../images/marker.png) no-repeat top left;
+  float:left;
+  width:99.9%;
+  height:9px;
+  margin-top:-1px;
+}
+
+#ui-od-footer
+{
+  width:100%;
+  height:70px;
+  background:url(../images/footer-repeat.png) repeat-x;
+  clear:both;
+}
+
+#ui-od-footer-content
+{
+  height:56px;
+  color:#000000;
+  padding:14px 5px 0 10px;
+  width:98.4%;
+  float:left;
+  font-size:11px;
+}
+
+#ui-od-footer-content-left
+{
+  width:370px;
+  float:left;
+  height:46px;
+  margin-top:10px;
+}
+
+#ui-od-footer-content-left-top
+{
+  width:370px;
+  float:left;
+  height:33px;
+}
+
+#ui-od-footer-content-right
+{
+  width:322px;
+  float:right;
+  height:56px;
+}
+
+#ui-od-footer-content-right-left
+{
+  width:220px;
+  height:46px;
+  float:left;
+  text-align:right;
+  margin-top:10px;
+}
+
+#ui-od-footer-content-right-left-top
+{
+  width:220px;
+  height:33px;
+  float:left;
+  text-align:right;
+}
+
+#ui-middle-content
+{
+  width:100%;
+  height:auto;
+  float:left;
+  background-color:#C7EAB3;
+  padding:0;
+  margin:0;
+}
+
+#middlecntLeftPlcd
+{
+  float:left;
+  width:144px;
+  height:auto;
+  margin-top:8px;
+  margin-right:7px;
+  position:relative;
+}
+
+#rightContent
+{
+  float:left;
+  width:99.93%;
+  height:auto;
+  border-left:1px solid #AFE09E;
+  background-color:#ffffff;
+}
+
+#righttcontentdiv
+{
+  float:left;
+  width:97.4%;
+  padding:0 11px;
+  padding-bottom:30px;
+}
+
+.navigation
+{
+  padding:0;
+  width:170px;
+}
+
+.navigation ul
+{
+  line-height:25px;
+  list-style-type:none;
+  margin:0 0 10px;
+  padding:0;
+}
+
+.ui-submenu
+{
+  line-height:15px;
+  list-style-type:none;
+  margin:0;
+  padding:0;
+  color:#3a8104;
+  font-size:11px;
+  font-family:sBodyFontFamily;
+}
+
+.ui-menu
+{
+  font-size:12px;
+  font-weight:bold;
+}
+
+.ui-submenu a
+{
+  color:#3a8104;
+  font-size:11px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+a:hover
+{
+  color:#606b02;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.ui-green
+{
+  color:#3a8104;
+  font-size:11px;
+}
+
+p
+{
+  color:#000000;
+}
+
+.divSpacing
+{
+  float:left;
+  margin:5px 0 7px;
+  width:99%;
+}
+
+#ui-od-button-spacing
+{
+  float:right;
+  margin:10px 7px 15px 0;
+}
+
+.ui-message-box
+{
+  padding:8px 0 8px 5px;
+  float:left;
+  width:1168px;
+  margin:5px 0;
+}
+
+.divApplication
+{
+  float:left;
+  margin-bottom:5px;
+  width:315px;
+}
+
+.icon
+{
+  border:0;
+  width:16px;
+  height:16px;
+  margin-top:0;
+}
+
+.labelsys
+{
+  font-size:12px;
+  font-weight:bold;
+  line-height:20px;
+}
+
+.valuesys
+{
+  font-size:12px;
+  font-weight:normal;
+  line-height:20px;
+}
+
+ul
+{
+  margin-left:10px;
+  padding-left:5px;
+}
+
+.titlebox
+{
+  background-color:#E5F4D5;
+  border:1px solid #C2E2AC;
+  padding:7px;
+  font-size:14px;
+  font-weight:bold;
+  overflow:hidden;
+}
+
+.radiolabel
+{
+  float:left;
+  clear:none;
+  font-weight:normal;
+  margin-top:2px;
+  margin-left:5px;
+}
+
+.checkboxlabel
+{
+  float:left;
+  clear:none;
+  font-weight:normal;
+  margin-top:2px;
+  margin-left:5px;
+  margin-right:20px;
+}
+
+body
+{
+  margin:1em;
+}
