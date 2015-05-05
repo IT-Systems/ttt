@@ -30,6 +30,13 @@ class helper {
 	header("Location: $sPath");
     }
 
+    public function haeTila($id) {
+        $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}tilat WHERE id = ?";
+        $stmt = $this->DB->prepare($sql);
+        $stmt->execute(array($id));
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     /*
      * Inform user if he/she has worked too much returning an array of messages for the view to present.
      * LIMITS:

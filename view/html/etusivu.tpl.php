@@ -323,27 +323,112 @@ echo $msgOhjeet;
     <div class="etusivu_osio">
         <h3 class="head"><a id="varaukset" href="#data4">Varaukset</a></h3>
         <div id="data4">
-            <table class="varaukset">
 <?php
+$Helper = new helper();
 foreach($kaikki_varaukset as $varaus_tyyppi => $varaukset) {
-    foreach($varaukset as $varaus_olio) {
-        $varaus = $varaus_olio->haeTiedot();
-        ?>
-                <tr>
-                    <td style="font-weight:bold;">
-                        <?php echo $varaus_tyyppi . ': ' . $varaus['alkuaika']; ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td id="varaukset_toinenrivi">
-                        Lisätiedot: <?php echo $varaus['lisatieto']; ?>
-                    </td>
-                </tr>
-                                <?php
+    if (sizeof($varaukset) > 0) {
+        if ($varaus_tyyppi == 'lentovaraus') { ?>
+            <table class="datataulukko">
+                <caption>Lentovaraukset</caption>
+                <thead>
+                    <tr>
+                        <th>Miehistö</th>
+                        <th>Ajankohta</th>
+                        <th>Kone</th>
+                        <th>Lisätiedot</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach($varaukset as $varaus_olio) {
+                        $varaus = $varaus_olio->haeTiedot();
+                        $kone = $lennot->haeIlmaAlus($varaus['kone']);
+                        $miehisto = array();
+                        if ($varaus['miehisto']) {
+                            foreach ($varaus['miehisto'] as $p) $miehisto[] = $p['firstname'] . ' ' . $p['lastname'];
+                            $miehisto = implode(", ", $miehisto);
+                        } else {
+                            $miehisto = '';
+                        }
+                        printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
+                            $miehisto,
+                            date("j.n.Y H:i:s", strtotime($varaus['alkuaika'])) . ' - ' . date("j.n.Y H:i:s", strtotime($varaus['loppuaika'])),
+                            $kone['nimi'],
+                            $varaus['lisatieto']);
+                    }
+                    ?>
+                </tbody>
+            </table>                
+            <?php
+        } elseif ($varaus_tyyppi == 'huoltovaraus') {
+            ?>
+            <table class="datataulukko" style="margin-top:10px;">
+                <caption>Huoltovaraukset</caption>
+                <thead>
+                    <tr>
+                        <th>Vastuuhenkilö</th>
+                        <th>Ajankohta</th>
+                        <th>Kone</th>
+                        <th>Lisätiedot</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach($varaukset as $varaus_olio) {
+                        $varaus = $varaus_olio->haeTiedot();
+                        $kone = $lennot->haeIlmaAlus($varaus['kone']);
+                        printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
+                            $varaus['vastuuhenkilo']['firstname'] . ' ' . $varaus['vastuuhenkilo']['lastname'],
+                            date("j.n.Y H:i:s", strtotime($varaus['alkuaika'])) . ' - ' . date("j.n.Y H:i:s", strtotime($varaus['loppuaika'])),
+                            $kone['nimi'],
+                            $varaus['lisatieto']);
+                    }
+                    ?>
+                </tbody>
+            </table>                
+            <?php
+        } elseif ($varaus_tyyppi == 'tilavaraus') {
+            ?>
+            <table class="datataulukko" style="margin-top:10px;">
+                <caption>Tilavaraukset</caption>
+                <thead>
+                    <tr>
+                        <th>Tila</th>
+                        <th>Vastuuhenkilö</th>
+                        <th>Ajankohta</th>
+                        <th>Lisätiedot</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach($varaukset as $varaus_olio) {
+                        $varaus = $varaus_olio->haeTiedot();
+                        $vastuuhlot = array();
+                        $tila = $Helper->haeTila($varaus['tila']);
+
+                        if ($varaus['vastuuhenkilot']) {
+                            foreach ($varaus['vastuuhenkilot'] as $p) $vastuuhlot[] = $p['firstname'] . ' ' . $p['lastname'];
+                            $vastuuhlot = implode(", ", $vastuuhlot);
+                        } else {
+                            $vastuuhlot = '';
+                        }
+
+                        printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
+                            $tila['nimi'],
+                            $vastuuhlot,
+                            date("j.n.Y H:i:s", strtotime($varaus['alkuaika'])) . ' - ' . date("j.n.Y H:i:s", strtotime($varaus['loppuaika'])),
+                            $varaus['lisatieto']
+                        );
+                    }
+                    ?>
+                </tbody>
+            </table>                
+            <?php
+        }
     }
 }
 ?>		
-            </table>
+
         </div>
     </div>
     <hr/>
