@@ -18,7 +18,12 @@
 <div class="kp_div">
 
     <h2>Lentojen etsiminen</h2>
-
+    <?php
+    // Input defaults
+    $from = isset($_POST['strFromDate']) ? $_POST['strFromDate'] : date("d.m.Y", strtotime("-1 month"));
+    $to = isset($_POST['strToDate']) ? $_POST['strToDate'] : date("d.m.Y");    
+    $view = isset($_POST['intView']) ? $_POST['intView'] : '1';
+    ?>
 
     <div class="tiedot_osio">
         <a href="<?php print $APP->BASEURL; ?>/lennot.php?ID=53&mode=extended" style="font-weight:bold;" class="ui-od-button-with-icon ui-state-default ui-corner-all"><span class="ui-icon ui-icon-zoomin"></span>Laajennettu haku</a><br><br>
@@ -32,15 +37,15 @@
                 <tbody>
                     <tr>
                         <td>Aikaväli</td>
-                        <td><input type="text" class="textboxNormal required" style="width:80px;" name="strFromDate" id="strFromDate"/></td>
+                        <td><input type="text" class="textboxNormal required" style="width:80px;" name="strFromDate" id="strFromDate" value="<?php echo $from; ?>"/></td>
                         <td> - </td>
-                        <td><input type="text" class="textboxNormal required" style="width:80px;" name="strToDate" id="strToDate"/></td>
+                        <td><input type="text" class="textboxNormal required" style="width:80px;" name="strToDate" id="strToDate" value="<?php echo $to; ?>"/></td>
                     </tr>
                     <tr>
                         <td>Näkymä</td>
                         <td colspan="3">
-                            <input type="radio" name="intView" id="intView" class="required" value="1"/>Yleinen<br/>
-                            <input type="radio" name="intView" id="intView" class="required" value="2"/>JAR 1.080 Logbook
+                            <input type="radio" name="intView" id="intView" class="required" value="1"<?php if ($view == '1') echo ' checked'; ?>/>Yleinen<br/>
+                            <input type="radio" name="intView" id="intView" class="required" value="2"<?php if ($view == '2') echo ' checked'; ?>/>JAR 1.080 Logbook
                         </td>
                     </tr>
                 </tbody>
