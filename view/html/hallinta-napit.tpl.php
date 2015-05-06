@@ -1,4 +1,3 @@
-
 <div id="ylanapit" class="valikko alavalikko">
     <ul class="topnav">
         <li class="first-li"><a href="hallinta.php?ID=50">Kelpuutukset</a></li>
@@ -10,7 +9,7 @@
         <li><a href="hallinta.php?ID=66">Syllabukset</a></li>
         <li><a href="hallinta.php?ID=30">Tilat</a></li>
         <li><a href="hallinta.php?ID=38">Ohjeet & Tiedotteet</a></li>
+        <li><a href="hallinta.php?ID=80">Toiminnan laadut</a></li>
         <li><a href="hallinta.php?ID=79">Työvuorot</a></li>
-
     </ul>
 </div>

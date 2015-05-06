@@ -195,6 +195,11 @@ switch($APP->ID) {
 
     case 66:
         $syllabukset = $hal->haeSyllabukset();
+        if (isset($_POST['syllabus'])) {
+            if ($hal->talSyllabukset($_POST['syllabus'])) {
+                header('Location: hallinta.php?ID=66&PF=1');
+            }
+        }
         $APP->VIEWPARTS = array('header-main.tpl.php', 'hallinta-syllabukset.tpl.php', 'footer-main.tpl.php');
         $APP->PAGEVARS[TITLE] = "Hallinta - Syllabukset";
         $APP->PAGEVARS[HEADERTEXT] = "Hallinta - Syllabukset";
@@ -296,6 +301,17 @@ switch($APP->ID) {
         $APP->PAGEVARS[TITLE] = "Hallinta - Työvuorot";
         $APP->PAGEVARS[HEADERTEXT] = "Hallinta - Työvuorot";
         $APP->PAGEVARS[BREADCRUMB] = "Hallinta - Työvuorot";
+        break;
+
+    case 80:
+        $Hallinta = new hallinta();
+        if (isset($_POST['qualities'])) {
+            if ($hal->talToiminnanLaadut($_POST['qualities'])) {
+                header('Location: hallinta.php?ID=80&PF=1');
+            }
+        }        
+        $laadut = $Hallinta->haeToiminnanLaadut();
+        $APP->VIEWPARTS = array('header-main.tpl.php', 'hallinta-toiminnan-laadut.tpl.php', 'footer-main.tpl.php');
         break;
 
     default:

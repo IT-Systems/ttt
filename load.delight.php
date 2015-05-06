@@ -85,7 +85,9 @@ class Delight_APP
 	/* Application Data Sanitization*/
 	static function sanitize(&$sVal, $sKey)
 	{
-		$sVal = stripslashes(trim($sVal));
+		if (!is_array($sVal)) {
+			$sVal = stripslashes(trim($sVal));
+		}
 		return $sVal;
 	}
 	

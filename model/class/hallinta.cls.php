@@ -733,6 +733,17 @@ class hallinta {
         return ($id > 0) ? $stmt->fetch(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function talSyllabukset($data = Array()) {
+        if ($data) {
+            foreach ($data as $s) {
+                $stmt = $this->DB->prepare("INSERT INTO {$this->APP->TABLEPREFIX}syllabukset SET nimi = ?, selite = ?");
+                $stmt->execute(array($s['name'], $s['desc']));
+            }
+            return true;
+        }
+        return false;
+    }
+
     public function haeSyllabuksenHarjoitukset($syllabus_id)
     {
         $sql = "SELECT * FROM {$this->APP->TABLEPREFIX}syllabus_harjoitukset ";
@@ -957,6 +968,23 @@ class hallinta {
         if (!empty($_POST["strToDate"])) $paluu.= "&strToDate=".$_POST["strToDate"];
         header("Location: " . $paluu);
     }
+
+    public function haeToiminnanLaadut() {
+        $stmt = $this->DB->prepare("SELECT * FROM {$this->APP->TABLEPREFIX}lento_toiminnan_laadut");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function talToiminnanLaadut($data = Array()) {
+        if ($data) {
+            foreach ($data as $s) {
+                $stmt = $this->DB->prepare("INSERT INTO {$this->APP->TABLEPREFIX}lento_toiminnan_laadut SET lyhenne = ?, nimi = ?");
+                $stmt->execute(array($s['short'], $s['name']));
+            }
+            return true;
+        }
+        return false;
+    }    
 
 } //END OF CLASS
 ?>

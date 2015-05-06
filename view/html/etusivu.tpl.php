@@ -155,7 +155,7 @@ if ($ilmoitukset && $USER->ID == 1) {
     $ak = new aikakalu();
     ?>
     <div class="etusivu_osio">
-        <h3>Vanhenevat kelpuutukset</h3>
+        <h3 class="head"><a href="#">Vanhenevat kelpuutukset</a></h3>
         <table class="datataulukko">
             <thead>
                 <tr>
