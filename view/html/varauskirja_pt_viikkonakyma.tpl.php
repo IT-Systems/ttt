@@ -80,10 +80,12 @@ foreach ($kaikki_tyypin_koneet as $konetyyppi => $koneet) {
         its::array_group($varaukset['konevaraukset'][$kone_id], 'alkupvm');
         foreach ($paivat as $paiva) {
             $date = date('Y-m-d', $paiva);
+            $lentovaraukset = $lento->haeKohteenVarauksetPaivalle($date, $kone_id);
+            $huoltovaraukset = $huolto->haeKohteenVarauksetPaivalle($date, $kone_id);
 
             $lisaa_varaus = ($suunnittelutila) ? '<div class="lisaa-varaus-container"><a class="lisaa-varaus ui-od-button-with-icon ui-state-default ui-corner-all" href="#uusi-konevaraus" paiva="' . date('d.m.Y', $paiva) . '" aika="" vaaditaan="' . $kone_id . '"><span class="ui-icon ui-icon-plus"></span> Uusi varaus</a>' : '';
-
-            if (empty($varaukset['konevaraukset'][$kone_id][$date])) {
+            //if (empty($varaukset['konevaraukset'][$kone_id][$date])) {
+            if (!$lentovaraukset && !$huoltovaraukset) {
                 echo '<td class="tyhja-varaus">';
                 echo $lisaa_varaus;
                 echo '</td>';
@@ -91,12 +93,44 @@ foreach ($kaikki_tyypin_koneet as $konetyyppi => $koneet) {
                 echo '<td class="on-varaus">';
                 // Yhdelle päivälle voi olla useampi varaus; loopataan ne läpi
                 echo $lisaa_varaus;
+                if ($lentovaraukset) {
+                    foreach ($lentovaraukset as $l) {
+                        $varaustiedot = $l->haeVaraus($l->id);
+
+                        $alku = new DateTime($varaustiedot['alkuaika']['arvo']);
+                        $loppu = new DateTime($varaustiedot['loppuaika']['arvo']);
+
+                        $alkuaika_out = ($alku->format('Y-m-d') < $date) ? '00:00' : $alku->format('H:i');
+                        $loppuaika_out = ($loppu->format('Y-m-d') > $date) ? '00:00' : $loppu->format('H:i'); 
+
+                        $linkki = ($suunnittelutila) ? array('<a class="muokkaa-varausta" href="#!" varaus_id="' . $l->id . '" varaus_tyyppi="lento">', '</a>') : array('<a class="nayta-varaus" href="#!" varaus_id="' . $l->id . '" varaus_tyyppi="lento">', '</a>');
+                        echo '<div class="varaus lento-varaus">' . $linkki[0] . 'lento &rarr; ' . $alkuaika_out . '-' . $loppuaika_out . '<br/>' . $varaustiedot['lisatieto']['arvo'] . $linkki[1] . '</div>';
+                    }
+                }
+                if ($huoltovaraukset) {
+                    foreach ($huoltovaraukset as $h) {
+                        $varaustiedot = $h->haeVaraus($h->id);
+
+                        $alku = new DateTime($varaustiedot['alkuaika']['arvo']);
+                        $loppu = new DateTime($varaustiedot['loppuaika']['arvo']);
+
+                        $alkuaika_out = ($alku->format('Y-m-d') < $date) ? '00:00' : $alku->format('H:i');
+                        $loppuaika_out = ($loppu->format('Y-m-d') > $date) ? '00:00' : $loppu->format('H:i'); 
+
+                        $linkki = ($suunnittelutila) ? array('<a class="muokkaa-varausta" href="#!" varaus_id="' . $h->id . '" varaus_tyyppi="huolto">', '</a>') : array('<a class="nayta-varaus" href="#!" varaus_id="' . $h->id . '" varaus_tyyppi="huolto">', '</a>');
+                        echo '<div class="varaus huolto-varaus">' . $linkki[0] . 'huolto &rarr; ' . $alkuaika_out . '-' . $loppuaika_out . '<br/>' . $varaustiedot['lisatieto']['arvo'] . $linkki[1] . '</div>';
+                    }
+                }
+                /*
                 foreach ($varaukset['konevaraukset'][$kone_id][$date] as $varaus) {
                     $alku = new DateTime($varaus['alkuaika']);
                     $loppu = new DateTime($varaus['loppuaika']);
+                    $interval = $alku->diff($loppu);
+
                     $linkki = ($suunnittelutila) ? array('<a class="muokkaa-varausta" href="#!" varaus_id="' . $varaus['id'] . '" varaus_tyyppi="' . $varaus['varaus_tyyppi'] . '">', '</a>') : array('<a class="nayta-varaus" href="#!" varaus_id="' . $varaus['id'] . '" varaus_tyyppi="' . $varaus['varaus_tyyppi'] . '">', '</a>');
                     echo '<div class="varaus ' . $varaus['varaus_tyyppi'] . '-varaus">' . $linkki[0] . $varaus['varaus_tyyppi'] . '&rarr; ' . $alku->format('H:i') . '-' . $loppu->format('H:i') . '<br/>' . $varaus['lisatieto'] . $linkki[1] . '</div>';
                 }
+                */
                 echo '</td>';
             }
         }
@@ -118,21 +152,35 @@ foreach ($kaikki_tyypin_koneet as $konetyyppi => $koneet) {
         its::array_group($kaikki_tilat, 'id', true, true);
         its::array_group($tilavaraukset, 'tila');
 
-        foreach ($kaikki_tilat as $tila_id => $tila) {
+        foreach ($kaikki_tilat as $tila_id => $tilaa) {
             echo '<tr>';
-            echo '<th colspan="2" class="tila">' . $tila['nimi'] . ' / ' . $tila['koodi'] . '</th>';
+            echo '<th colspan="2" class="tila">' . $tilaa['nimi'] . ' / ' . $tilaa['koodi'] . '</th>';
 
             its::array_group($tilavaraukset[$tila_id], 'alkupvm');
             foreach ($paivat as $paiva) {
                 $date = date('Y-m-d', $paiva);
+                $tilavaraukset_new = $tila->haeKohteenVarauksetPaivalle($date, $tila_id);
 
                 $lisaa_varaus = ($suunnittelutila) ? '<div class="lisaa-varaus-container"><a class="lisaa-varaus ui-od-button-with-icon ui-state-default ui-corner-all" href="#uusi-tilavaraus" paiva="' . date('d.m.Y', $paiva) . '" aika="" vaaditaan="' . $tila_id . '"><span class="ui-icon ui-icon-plus"></span> Uusi varaus</a>' : '';
-                if (empty($tilavaraukset[$tila_id][$date])) {
+                if (!$tilavaraukset_new) {
+                //if (empty($tilavaraukset[$tila_id][$date])) {
                     echo '<td class="tyhja-varaus">' . $lisaa_varaus . '</td>';
                 } else {
-
                     echo '<td class="on-varaus">';
                     echo $lisaa_varaus;
+                    foreach ($tilavaraukset_new as $t) {
+                        $varaustiedot = $t->haeVaraus($t->id);
+
+                        $alku = new DateTime($varaustiedot['alkuaika']['arvo']);
+                        $loppu = new DateTime($varaustiedot['loppuaika']['arvo']);
+
+                        $alkuaika_out = ($alku->format('Y-m-d') < $date) ? '00:00' : $alku->format('H:i');
+                        $loppuaika_out = ($loppu->format('Y-m-d') > $date) ? '00:00' : $loppu->format('H:i'); 
+
+                        $linkki = ($suunnittelutila) ? array('<a class="muokkaa-varausta" href="#!" varaus_id="' . $t->id . '" varaus_tyyppi="tila">', '</a>') : array('<a class="nayta-varaus" href="#!" varaus_id="' . $t->id . '" varaus_tyyppi="tila">', '</a>');
+                        echo '<div class="varaus tila-varaus">' . $linkki[0] . $alkuaika_out . '-' . $loppuaika_out . '<br/>' . $varaustiedot['lisatieto']['arvo'] . $linkki[1] . '</div>';
+                    }  
+                    /*                    
                     foreach ($tilavaraukset[$tila_id][$date] as $varaus_id => $varaus) {
                         $alku = new DateTime($varaus['alkuaika']);
                         $loppu = new DateTime($varaus['loppuaika']);
@@ -140,6 +188,7 @@ foreach ($kaikki_tyypin_koneet as $konetyyppi => $koneet) {
                         
                         echo '<div class="varaus tila-varaus">' . $linkki[0] . $alku->format('H:i') . '-' . $loppu->format('H:i') . '<br/>' . $varaus['lisatieto'] . $linkki[1] . '</div>';
                     }
+                    */
                     echo '</td>';
                 }
             }

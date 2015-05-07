@@ -189,6 +189,32 @@ abstract class Varaus {
         }
         return $return;
     }
+
+    public function haeKohteenVarauksetPaivalle($paiva, $id) {
+        $sql = "SELECT * FROM " . $this->DB_PREFIX . $this->VARAUS_PREFIX . $this->VARAUS_TAULU . " WHERE ";
+        if (in_array($this->haeVarausTyyppi(), array('huolto', 'lento'))) {
+            $sql.= "kone = :id ";
+        } elseif ($this->haeVarausTyyppi() == 'tila') {
+            $sql.= "tila = :id ";
+        } elseif ($this->haeVarausTyyppi() == 'paikallaolo') {
+            $sql.= "userid = :id ";
+        }
+        $sql.= "AND date(alkuaika) <= :paiva AND date(loppuaika) >= :paiva";
+
+        $stmt = $this->DB->prepare($sql);
+        $stmt->bindValue(':id', $id);
+        $stmt->bindValue(':paiva', $paiva);
+        $stmt->execute();
+        $varaukset = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $return = array();
+        $class = get_class($this);
+        foreach ($varaukset as $v) {
+            $return[] = new $class((int)$v['id']);
+        }
+
+        return $return;
+    }
     
     /**
      * Hakee käyttäjän varaustyypin varaukset alkaen annetusta päivämäärästä sekä varaukset, jotka ovat meneillään.
